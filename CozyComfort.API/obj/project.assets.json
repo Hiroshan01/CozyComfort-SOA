@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net9.0": {
       "BCrypt.Net-Next/4.2.0": {
@@ -1373,19 +1373,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hiros\\.nuget\\packages\\": {}
+    "/home/runner/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.API\\CozyComfort.API.csproj",
+      "projectUniqueName": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.API/CozyComfort.API.csproj",
       "projectName": "CozyComfort.API",
-      "projectPath": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.API\\CozyComfort.API.csproj",
-      "packagesPath": "C:\\Users\\hiros\\.nuget\\packages\\",
-      "outputPath": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.API\\obj\\",
+      "projectPath": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.API/CozyComfort.API.csproj",
+      "packagesPath": "/home/runner/.nuget/packages/",
+      "outputPath": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.API/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\hiros\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/runner/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -1395,16 +1395,17 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Application\\CozyComfort.Application.csproj": {
-              "projectPath": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Application\\CozyComfort.Application.csproj"
+            "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Application/CozyComfort.Application.csproj": {
+              "projectPath": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Application/CozyComfort.Application.csproj"
             },
-            "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Infrastructure\\CozyComfort.Infrastructure.csproj": {
-              "projectPath": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Infrastructure\\CozyComfort.Infrastructure.csproj"
+            "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Infrastructure/CozyComfort.Infrastructure.csproj": {
+              "projectPath": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Infrastructure/CozyComfort.Infrastructure.csproj"
             },
-            "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Shared\\CozyComfort.Shared.csproj": {
-              "projectPath": "G:\\ICBT Assignmment\\CozyComfort-SOA\\CozyComfort.Shared\\CozyComfort.Shared.csproj"
+            "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Shared/CozyComfort.Shared.csproj": {
+              "projectPath": "/home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.Shared/CozyComfort.Shared.csproj"
             }
           }
         }
@@ -1419,10 +1420,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net9.0": {
+        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": {
@@ -1453,7 +1455,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
