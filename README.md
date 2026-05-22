@@ -1,6 +1,6 @@
-# Cozy Comfort SOA Backend
+# Cozy Comfort SOA
 
-ASP.NET Core Web API backend for Cozy Comfort using layered architecture with modules for authentication, blankets, inventory, orders, distributor workflows, manufacturer workflows, and notifications.
+ASP.NET Core Web API and lightweight frontend for Cozy Comfort using layered architecture with modules for authentication, blankets, inventory, orders, distributor workflows, manufacturer workflows, and notifications.
 
 ## Projects
 - `CozyComfort.API` - API entry point, controllers, middleware, Swagger, auth setup
@@ -27,4 +27,6 @@ dotnet build /home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.sln
 dotnet run --project /home/runner/work/CozyComfort-SOA/CozyComfort-SOA/CozyComfort.API/CozyComfort.API.csproj
 ```
 
-Swagger is available in development mode.
+After the API starts, open `https://localhost:<port>/` to use the frontend dashboard. The frontend is served from `CozyComfort.API/wwwroot` and uses the same-origin API endpoints, so no extra client setup is required.
+
+Swagger is available in development mode at `https://localhost:<port>/swagger`.

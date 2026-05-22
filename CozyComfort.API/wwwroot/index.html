@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cozy Comfort Portal</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Cozy Comfort SOA</p>
+                <h1>Supply chain control center</h1>
+                <p class="hero-copy">Manage blankets, orders, inventory, production, users, and notifications from one frontend served directly by the API.</p>
+            </div>
+            <div class="hero-card">
+                <h2>Seeded accounts</h2>
+                <ul class="credentials-list">
+                    <li><strong>Admin</strong> — admin@cozycomfort.local / Admin@123</li>
+                    <li><strong>Manufacturer</strong> — manufacturer@cozycomfort.local / Manufacturer@123</li>
+                    <li><strong>Distributor</strong> — distributor@cozycomfort.local / Distributor@123</li>
+                    <li><strong>Seller</strong> — seller@cozycomfort.local / Seller@123</li>
+                </ul>
+            </div>
+        </header>
+
+        <section class="status-bar">
+            <div>
+                <strong>API:</strong> <span id="apiBaseLabel">Same origin</span>
+            </div>
+            <div>
+                <strong>Session:</strong> <span id="sessionStatus">Signed out</span>
+            </div>
+            <div class="status-actions">
+                <button id="refreshDashboardButton" class="secondary" type="button">Refresh dashboard</button>
+                <button id="logoutButton" class="ghost" type="button">Logout</button>
+            </div>
+        </section>
+
+        <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+
+        <main class="dashboard-grid">
+            <section class="panel auth-panel">
+                <div class="panel-header">
+                    <h2>Authentication</h2>
+                    <p>Login with an existing account or register a new seller account.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <form id="loginForm" class="stacked-form">
+                        <h3>Login</h3>
+                        <label>
+                            Email
+                            <input name="email" type="email" placeholder="you@example.com" required>
+                        </label>
+                        <label>
+                            Password
+                            <input name="password" type="password" placeholder="••••••••" required>
+                        </label>
+                        <button type="submit">Login</button>
+                    </form>
+
+                    <form id="registerForm" class="stacked-form">
+                        <h3>Register seller</h3>
+                        <label>
+                            Full name
+                            <input name="fullName" type="text" maxlength="100" required>
+                        </label>
+                        <label>
+                            Email
+                            <input name="email" type="email" required>
+                        </label>
+                        <label>
+                            Password
+                            <input name="password" type="password" minlength="8" required>
+                        </label>
+                        <label>
+                            Assigned distributor ID (optional)
+                            <input name="assignedDistributorId" type="text" placeholder="Guid">
+                        </label>
+                        <button type="submit">Register</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" id="profilePanel">
+                <div class="panel-header">
+                    <h2>Profile</h2>
+                    <p>Current user details and permissions.</p>
+                </div>
+                <div id="profileSummary" class="summary-grid empty-state">Login to load your profile.</div>
+            </section>
+
+            <section class="panel" id="blanketsPanel">
+                <div class="panel-header">
+                    <h2>Blankets catalog</h2>
+                    <p>Browse all blanket models and maintain the catalog as an admin or manufacturer.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <div>
+                        <div id="blanketsSummary" class="summary-strip"></div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>Material</th>
+                                        <th>Size</th>
+                                        <th>Color</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Capacity</th>
+                                        <th id="blanketsActionsHeader">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="blanketsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <form id="blanketForm" class="stacked-form" data-role-guard="Manufacturer,Admin">
+                        <h3>Create or update blanket</h3>
+                        <input name="blanketId" type="hidden">
+                        <label>
+                            Model name
+                            <input name="modelName" type="text" maxlength="100" required>
+                        </label>
+                        <label>
+                            Material
+                            <input name="material" type="text" maxlength="100" required>
+                        </label>
+                        <label>
+                            Size
+                            <input name="size" type="text" maxlength="50" required>
+                        </label>
+                        <label>
+                            Color
+                            <input name="color" type="text" maxlength="50" required>
+                        </label>
+                        <label>
+                            Price
+                            <input name="price" type="number" min="0.01" step="0.01" required>
+                        </label>
+                        <label>
+                            Production capacity
+                            <input name="productionCapacity" type="number" min="0" step="1" required>
+                        </label>
+                        <label>
+                            Current stock
+                            <input name="currentStock" type="number" min="0" step="1" required>
+                        </label>
+                        <div class="button-row">
+                            <button type="submit">Save blanket</button>
+                            <button id="blanketFormResetButton" type="button" class="secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" id="ordersPanel">
+                <div class="panel-header">
+                    <h2>Orders</h2>
+                    <p>Create, track, and update orders across the supply chain.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <div>
+                        <div id="ordersSummary" class="summary-strip"></div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Seller</th>
+                                        <th>Distributor</th>
+                                        <th>Lead time</th>
+                                        <th>Items</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="stacked-sections">
+                        <form id="createOrderForm" class="stacked-form" data-role-guard="Seller">
+                            <h3>Create order</h3>
+                            <label>
+                                Customer name
+                                <input name="customerName" type="text" maxlength="100" required>
+                            </label>
+                            <label>
+                                Delivery address
+                                <input name="deliveryAddress" type="text" maxlength="250" required>
+                            </label>
+                            <div id="orderItemsContainer" class="stacked-sections"></div>
+                            <div class="button-row">
+                                <button id="addOrderItemButton" type="button" class="secondary">Add item</button>
+                                <button type="submit">Create order</button>
+                            </div>
+                        </form>
+
+                        <form id="updateOrderForm" class="stacked-form">
+                            <h3>Update order</h3>
+                            <label>
+                                Order ID
+                                <input name="orderId" type="text" placeholder="Guid" required>
+                            </label>
+                            <label>
+                                Status
+                                <select name="status">
+                                    <option value="">Keep current status</option>
+                                </select>
+                            </label>
+                            <label>
+                                Notes
+                                <textarea name="notes" rows="3" placeholder="Optional status note"></textarea>
+                            </label>
+                            <label>
+                                Delivery address
+                                <input name="deliveryAddress" type="text" maxlength="250" placeholder="Optional updated address">
+                            </label>
+                            <button type="submit">Update order</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="inventoryPanel">
+                <div class="panel-header">
+                    <h2>Inventory</h2>
+                    <p>Monitor stock, adjust quantities, and transfer inventory between owners.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <div>
+                        <div id="inventorySummary" class="summary-strip"></div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Blanket</th>
+                                        <th>Owner type</th>
+                                        <th>Owner</th>
+                                        <th>Quantity</th>
+                                        <th>Updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="stacked-sections">
+                        <form id="stockCheckForm" class="stacked-form">
+                            <h3>Stock check</h3>
+                            <label>
+                                Blanket
+                                <select name="blanketId" required></select>
+                            </label>
+                            <label>
+                                Owner type
+                                <select name="ownerType" required></select>
+                            </label>
+                            <label>
+                                Owner user ID
+                                <input name="ownerUserId" type="text" placeholder="Guid" required>
+                            </label>
+                            <button type="submit">Check stock</button>
+                            <pre id="stockCheckResult" class="inline-result">No stock check performed.</pre>
+                        </form>
+
+                        <form id="inventoryUpdateForm" class="stacked-form" data-role-guard="Manufacturer,Distributor,Admin">
+                            <h3>Update inventory</h3>
+                            <label>
+                                Blanket
+                                <select name="blanketId" required></select>
+                            </label>
+                            <label>
+                                Owner type
+                                <select name="ownerType" required></select>
+                            </label>
+                            <label>
+                                Owner user ID
+                                <input name="ownerUserId" type="text" placeholder="Guid" required>
+                            </label>
+                            <label>
+                                Quantity
+                                <input name="quantity" type="number" min="0" step="1" required>
+                            </label>
+                            <button type="submit">Save inventory</button>
+                        </form>
+
+                        <form id="inventoryTransferForm" class="stacked-form" data-role-guard="Manufacturer,Distributor,Admin">
+                            <h3>Transfer inventory</h3>
+                            <label>
+                                Blanket
+                                <select name="blanketId" required></select>
+                            </label>
+                            <label>
+                                From owner type
+                                <select name="fromOwnerType" required></select>
+                            </label>
+                            <label>
+                                From owner user ID
+                                <input name="fromOwnerUserId" type="text" placeholder="Guid" required>
+                            </label>
+                            <label>
+                                To owner type
+                                <select name="toOwnerType" required></select>
+                            </label>
+                            <label>
+                                To owner user ID
+                                <input name="toOwnerUserId" type="text" placeholder="Guid" required>
+                            </label>
+                            <label>
+                                Quantity
+                                <input name="quantity" type="number" min="1" step="1" required>
+                            </label>
+                            <button type="submit">Transfer inventory</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="manufacturerPanel" data-role-guard="Manufacturer,Admin">
+                <div class="panel-header">
+                    <h2>Manufacturer tools</h2>
+                    <p>Check capacity, estimate lead time, and update production status.</p>
+                </div>
+                <div class="panel-grid three-columns">
+                    <form id="productionCapacityForm" class="stacked-form">
+                        <h3>Production capacity</h3>
+                        <label>
+                            Blanket
+                            <select name="blanketId" required></select>
+                        </label>
+                        <label>
+                            Requested quantity
+                            <input name="requestedQuantity" type="number" min="1" step="1" required>
+                        </label>
+                        <button type="submit">Check capacity</button>
+                        <pre id="productionCapacityResult" class="inline-result">No capacity check performed.</pre>
+                    </form>
+
+                    <form id="leadTimeForm" class="stacked-form">
+                        <h3>Lead time</h3>
+                        <label>
+                            Blanket
+                            <select name="blanketId" required></select>
+                        </label>
+                        <label>
+                            Requested quantity
+                            <input name="requestedQuantity" type="number" min="1" step="1" required>
+                        </label>
+                        <button type="submit">Get lead time</button>
+                        <pre id="leadTimeResult" class="inline-result">No lead time request performed.</pre>
+                    </form>
+
+                    <form id="productionStatusForm" class="stacked-form">
+                        <h3>Production status</h3>
+                        <label>
+                            Blanket
+                            <select name="blanketId" required></select>
+                        </label>
+                        <label>
+                            Current stock
+                            <input name="currentStock" type="number" min="0" step="1" required>
+                        </label>
+                        <label>
+                            Production capacity
+                            <input name="productionCapacity" type="number" min="0" step="1" required>
+                        </label>
+                        <button type="submit">Update production</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" id="distributorPanel" data-role-guard="Distributor">
+                <div class="panel-header">
+                    <h2>Distributor workspace</h2>
+                    <p>Review assigned sellers and fulfill pending seller requests.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <div>
+                        <h3>Assigned sellers</h3>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Seller ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assignedSellersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="stacked-sections">
+                        <div>
+                            <h3>Distributor orders</h3>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="distributorOrdersTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <form id="fulfillOrderForm" class="stacked-form">
+                            <h3>Fulfill seller request</h3>
+                            <label>
+                                Order ID
+                                <input name="orderId" type="text" placeholder="Guid" required>
+                            </label>
+                            <button type="submit">Fulfill order</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel" id="usersPanel" data-role-guard="Admin">
+                <div class="panel-header">
+                    <h2>User administration</h2>
+                    <p>Review all users and update roles.</p>
+                </div>
+                <div class="panel-grid two-columns">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Assigned distributor</th>
+                                    <th>User ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <form id="userRoleForm" class="stacked-form">
+                        <h3>Update user role</h3>
+                        <label>
+                            User
+                            <select name="userId" required></select>
+                        </label>
+                        <label>
+                            Role
+                            <select name="role" required></select>
+                        </label>
+                        <label>
+                            Assigned distributor ID (optional)
+                            <input name="assignedDistributorId" type="text" placeholder="Guid">
+                        </label>
+                        <button type="submit">Save role</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" id="notificationsPanel">
+                <div class="panel-header">
+                    <h2>Notifications</h2>
+                    <p>Keep track of unread operational updates.</p>
+                </div>
+                <div id="notificationsList" class="notification-list empty-state">Login to load notifications.</div>
+            </section>
+        </main>
+    </div>
+
+    <template id="orderItemTemplate">
+        <div class="order-item-row">
+            <label>
+                Blanket
+                <select name="blanketId" required></select>
+            </label>
+            <label>
+                Quantity
+                <input name="quantity" type="number" min="1" step="1" required>
+            </label>
+            <button type="button" class="ghost remove-order-item-button">Remove</button>
+        </div>
+    </template>
+
+    <script src="/app.js" defer></script>
+</body>
+</html>
