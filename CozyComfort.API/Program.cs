@@ -53,6 +53,8 @@ if (app.Environment.IsDevelopment())
 await app.Services.InitializeDatabaseAsync();
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
